@@ -24,9 +24,7 @@ saveButton.addEventListener("click", function () {
     const playerClubName = clubName.value;
 
     console.log(playerName + " plays in " + playerClubName);
-
-    const docRef = firestore.collection("players").doc(name.value);
-
+    const docRef = firestore.collection("players").doc(playerName);
     docRef
         .set({
             Name: playerName,
@@ -39,3 +37,19 @@ saveButton.addEventListener("click", function () {
             console.log("Got an error ", error);
         });
 });
+
+const playerName = document.querySelector("#playerName");
+const playerClub = document.querySelector("#playerClub");
+
+getRealTimeUpdates = function () {
+    const docRef = firestore.collection("players").doc("Marcelo");
+    docRef.onSnapshot(function (doc) {
+        if (doc && doc.exists) {
+            const myData = doc.data();
+            playerName.innerText = "Player's name: " + myData.Name;
+            playerClub.innerText = "Player's Club: " + myData.Club;
+        }
+    });
+};
+
+getRealTimeUpdates();
