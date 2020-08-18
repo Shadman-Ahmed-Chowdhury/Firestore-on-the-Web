@@ -36,6 +36,8 @@ saveButton.addEventListener("click", function () {
         .catch(function (error) {
             console.log("Got an error ", error);
         });
+    name.value = "";
+    clubName.value = "";
 });
 
 const playerName = document.querySelector("#playerName");
@@ -51,7 +53,12 @@ function renderPlayerList(doc) {
 
     li.setAttribute("data-id", doc.id);
 
-    name.textContent = doc.data().Name;
+    name.innerHTML +=
+        `<div class="card">
+                        <h1>` +
+        doc.data().Name +
+        ` </h1>
+                        </div>`;
     clubName.textContent = doc.data().Club;
 
     li.appendChild(name);
@@ -65,8 +72,18 @@ firestore
     .get()
     .then((snapshot) => {
         snapshot.docs.forEach((doc) => {
-            console.log(doc.data().Name + " plays in " + doc.data().Club);
-            renderPlayerList(doc);
+            //console.log(doc.data().Name + " plays in " + doc.data().Club);
+            //renderPlayerList(doc);
         });
     });
+
+firestore.collection("players").onSnapshot((snapshot) => {
+    let changes = snapshot.docChanges();
+    changes.forEach((change) => {
+        console.log(change.doc.data());
+        if (change.type === "added") {
+            renderPlayerList(change.doc);
+        }
+    });
+});
 //playerList.innerHTML += "hello " + doc.data().Name + "<br>";
