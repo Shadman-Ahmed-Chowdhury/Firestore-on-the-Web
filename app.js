@@ -41,15 +41,32 @@ saveButton.addEventListener("click", function () {
 const playerName = document.querySelector("#playerName");
 const playerClub = document.querySelector("#playerClub");
 
-getRealTimeUpdates = function () {
-    const docRef = firestore.collection("players").doc("Marcelo");
-    docRef.onSnapshot(function (doc) {
-        if (doc && doc.exists) {
-            const myData = doc.data();
-            playerName.innerText = "Player's name: " + myData.Name;
-            playerClub.innerText = "Player's Club: " + myData.Club;
-        }
-    });
-};
+let playerData = [];
+const playerList = document.querySelector("#playerList");
 
-getRealTimeUpdates();
+function renderPlayerList(doc) {
+    let li = document.createElement("li");
+    let name = document.createElement("span");
+    let clubName = document.createElement("span");
+
+    li.setAttribute("data-id", doc.id);
+
+    name.textContent = doc.data().Name;
+    clubName.textContent = doc.data().Club;
+
+    li.appendChild(name);
+    li.appendChild(clubName);
+
+    playerList.appendChild(li);
+}
+
+firestore
+    .collection("players")
+    .get()
+    .then((snapshot) => {
+        snapshot.docs.forEach((doc) => {
+            console.log(doc.data().Name + " plays in " + doc.data().Club);
+            renderPlayerList(doc);
+        });
+    });
+//playerList.innerHTML += "hello " + doc.data().Name + "<br>";
